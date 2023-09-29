@@ -25,7 +25,7 @@ def read_file_as_image(data) -> np.ndarray:
     return image_nparray
 
 
-@app.post("/predict")
+@app.post("/predict/v1")
 async def predict(file: UploadFile = File()):
 
     image = read_file_as_image(await file.read())
@@ -39,7 +39,7 @@ async def predict(file: UploadFile = File()):
     return f"Predictions using Model 1: {predictions}"
 
 
-@app.post("/predict2")
+@app.post("/predict/v2")
 async def predict(file: UploadFile = File()):
 
     image = read_file_as_image(await file.read())
