@@ -1,9 +1,24 @@
-from fastapi import FastAPI, File, UploadFile
 import uvicorn
 import numpy as np
 from io import BytesIO
 from PIL import Image
 import tensorflow as tf
+import os
+from fastapi import FastAPI, Body, HTTPException, status, File, UploadFile
+from fastapi.responses import Response, JSONResponse
+from fastapi.encoders import jsonable_encoder
+from pydantic import BaseModel, Field, EmailStr
+# from bson import ObjectId
+# from typing import Optional, List
+# import motor.motor_asyncio
+from fastapi.middleware.cors import CORSMiddleware
+
+
+app = FastAPI()
+
+
+# client = motor.motor_asyncio.AsyncIOMotorClient(os.environ["MONGODB_URL"])
+# db = client.college
 
 MODEL = tf.keras.models.load_model("../deep_learning/models/model_1")
 MODEL2 = tf.keras.models.load_model("../deep_learning/models/model_2")
@@ -12,6 +27,21 @@ CLASS_NAMES = ["early_blight", "late_blight", "healthy"]
 # SCRIPT: uvicorn main:app --host localhost --port 8000 --reload
 
 app = FastAPI()
+
+
+# Configure CORS
+origins = [
+    "http://localhost:3000",  # Add your React frontend URL
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    # You can restrict this to specific HTTP methods if needed
+    allow_methods=["*"],
+    allow_headers=["*"],  # You can restrict this to specific headers if needed
+)
 
 
 @app.get("/ping")
@@ -57,7 +87,12 @@ async def predict(file: UploadFile = File()):
         "confidence": str(confidence)
     }
 
-    # return f"Predictions using Model 2: {predictions} \n Predicted Class = {predicted_class}, confidence: {confidence}"
+
+@app.post("/login/details")
+async def login_details(request_data: dict):
+    print("Received JSON data from frontend:", request_data)
+    # You can return a response if needed
+    return {"message": "Data received successfully"}
 
 if __name__ == "__main__":
     uvicorn.run(app=app, host='localhost', port=8000, reload=True)
