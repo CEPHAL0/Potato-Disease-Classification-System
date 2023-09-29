@@ -12,8 +12,9 @@ import Grid from "@mui/material/Grid";
 import PersonIcon from "@mui/icons-material/Person";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useEffect, useState } from "react";
 
-function Copyright(props) {
+const Copyright = (props) => {
   return (
     <Typography
       variant="body2"
@@ -28,18 +29,43 @@ function Copyright(props) {
       {"."}
     </Typography>
   );
-}
+};
 
 const defaultTheme = createTheme();
 
-export default function SignInSide() {
-  const handleSubmit = (event) => {
+const SignInSide = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  // Function to Handle Button Click
+  const handleSubmit = async (event) => {
     event.preventDefault();
+
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
+
+    // email = await data.get("email");
+    // password = await data.get("password");
+
+    console.log(JSON.stringify({ email: email, password: password }));
+
+    // const response = await fetch("http://localhost:8000/login/result", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    // });
+
+    const requestBody = {
+      email: email,
+      password: password,
+    };
+
+    const response = await fetch("http://localhost:8000/login/details", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
     });
+    
   };
 
   return (
@@ -80,12 +106,15 @@ export default function SignInSide() {
             <Typography component="h1" variant="h5" fontFamily="Poppins">
               Sign in
             </Typography>
+
+            {/* FORM COMPONENT */}
             <Box
               component="form"
               noValidate
               onSubmit={handleSubmit}
               sx={{ mt: 1 }}
             >
+              {/* EMAIL FIELD */}
               <TextField
                 margin="normal"
                 required
@@ -94,9 +123,14 @@ export default function SignInSide() {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
                 autoFocus
                 fontFamily="Poppins"
               />
+
+              {/* PASSWORD FIELD */}
               <TextField
                 margin="normal"
                 required
@@ -105,13 +139,20 @@ export default function SignInSide() {
                 label="Password"
                 type="password"
                 id="password"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
                 autoComplete="current-password"
                 fontFamily="Poppins"
               />
+
+              {/* REMEMBER ME CHECKBOX AND END OF FORM */}
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"
               />
+
+              {/* SIGNIN BUTTON */}
               <Button
                 type="submit"
                 fullWidth
@@ -153,18 +194,24 @@ export default function SignInSide() {
               >
                 Sign In with Google
               </Button>
+
+              {/* FORGOT PASSWORD LINK */}
               <Grid container>
                 <Grid item xs>
                   <Link href="#" variant="body2" fontFamily="Poppins">
                     Forgot password?
                   </Link>
                 </Grid>
+
+                {/* DONT HAVE AN ACCOUNT LINK */}
                 <Grid item>
                   <Link href="#" variant="body2" fontFamily="Poppins">
                     {"Don't have an account? Sign Up"}
                   </Link>
                 </Grid>
               </Grid>
+
+              {/* COPYRIGHT LOGO */}
               <Copyright sx={{ mt: 5 }} />
             </Box>
           </Box>
@@ -172,4 +219,6 @@ export default function SignInSide() {
       </Grid>
     </ThemeProvider>
   );
-}
+};
+
+export default SignInSide;
