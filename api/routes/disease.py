@@ -82,6 +82,10 @@ async def predict(file: UploadFile = File()):
 
 @disease.post("/login/details")
 async def login_details(request_data: User):
-    print("Received JSON data from frontend:", request_data)
+    print({"message": {
+        "username": request_data.username,
+        "password": request_data.password,
+        "email": request_data.email
+    }})
     # You can return a response if needed
     return {"message": request_data}

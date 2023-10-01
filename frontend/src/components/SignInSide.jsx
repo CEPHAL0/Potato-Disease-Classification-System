@@ -62,16 +62,13 @@ const SignInSide = () => {
       username: username,
     };
 
-    const response = await fetch(
-      "http://localhost:8000/disease/login/details",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      }
-    );
+    const response = await fetch("http://localhost:8000/user/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    });
 
     console.log(response);
   };

@@ -1,8 +1,10 @@
 from fastapi import APIRouter, HTTPException
-from config.db import conn
+from config.db import conn, session
 from models.index import users
 from schemas.index import User
 from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
+
 
 user = APIRouter()
 
@@ -11,7 +13,7 @@ user = APIRouter()
 @user.get("/")
 async def read_data():
     # return conn.execute(users.select().fetchall())
-    result = conn.execute(users.select()).fetchall()
+    result = session.execute(users.select()).fetchall()
     print(result)
     if result:
         columns = users.c.keys()
@@ -22,12 +24,12 @@ async def read_data():
         # return JSONResponse({"message": "failed"})
 
 
-# GET USER ID
+# GET USER BY ID
 @user.get("/{id}")
 async def read_data(id: int):
     # return str(conn.execute(users.select(). where(users.c.id == id)).fetchone())
 
-    result = conn.execute(users.select().where(users.c.id == id)).fetchone()
+    result = session.execute(users.select().where(users.c.id == id)).fetchone()
 
     # print(result)
 
@@ -43,7 +45,7 @@ async def read_data(id: int):
 # INSERT USER
 @user.post("/")
 async def write_data(user: User):
-    result = conn.execute(users.insert().values(
+    result = session.execute(users.insert().values(
         # id=user.id,
         username=user.username,
         email=user.email,
@@ -51,7 +53,15 @@ async def write_data(user: User):
     ))
 
     if result.rowcount == 1:
+        session.commit()
         inserted_user_id = result.inserted_primary_key[0]
+        print("Recieved Data From Frontend")
+        print({
+            "id": inserted_user_id,
+            "username": user.username,
+            "email": user.email,
+            "password": user.password,
+        })
         return JSONResponse({
             "status": "success",
             "data": {
@@ -75,11 +85,12 @@ async def update_user(id: int, user: User):
         "email": user.email
     }
 
-    result = conn.execute(
+    result = session.execute(
         users.update().where(users.c.id == id).values(**update_data)
     )
 
     if result.rowcount == 1:
+        session.commit()
         return JSONResponse({
             "status": "success",
             "message": update_data
@@ -92,13 +103,14 @@ async def update_user(id: int, user: User):
 # DELETE USER
 @user.delete("/{id}")
 async def delete_data(id: int):
-    user_to_delete = conn.execute(
+    user_to_delete = session.execute(
         users.select().where(users.c.id == id)).fetchone()
     print(user_to_delete)
-    result = conn.execute(users.delete().where(users.c.id == id))
+    result = session.execute(users.delete().where(users.c.id == id))
     # return conn.execute(users.select()).fetchall()
 
     if result.rowcount == 1:
+        session.commit()
         # inserted_user_id = result.inserted_primary_key[0]
         return JSONResponse({
             "status": "success",
