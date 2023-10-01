@@ -73,6 +73,11 @@ async def predict(file: UploadFile = File()):
 async def predict(file: UploadFile = File()):
 
     image = read_file_as_image(await file.read())
+
+    # Resize the image to the desired shape (256x256x3)
+    target_shape = (256, 256, 3)
+    image = Image.fromarray(image)
+    image = image.resize((target_shape[1], target_shape[0]))
     # bytes = await file.read()
 
     # The model accepts the data in format [[]] format but we have the image in [] format, so we have to expand the dims in the numpy array of the image
@@ -92,7 +97,7 @@ async def predict(file: UploadFile = File()):
 async def login_details(request_data: dict):
     print("Received JSON data from frontend:", request_data)
     # You can return a response if needed
-    return {"message": "Data received successfully"}
+    return {"message": request_data}
 
 if __name__ == "__main__":
     uvicorn.run(app=app, host='localhost', port=8000, reload=True)
