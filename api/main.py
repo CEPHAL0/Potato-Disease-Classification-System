@@ -93,8 +93,13 @@ async def predict(file: UploadFile = File()):
     }
 
 
+class User(BaseModel):
+    username: str
+    password: str
+
+
 @app.post("/login/details")
-async def login_details(request_data: dict):
+async def login_details(request_data: User):
     print("Received JSON data from frontend:", request_data)
     # You can return a response if needed
     return {"message": request_data}

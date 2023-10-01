@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 user = APIRouter()
 
 
+# GET ALL USERS
 @user.get("/")
 async def read_data():
     # return conn.execute(users.select().fetchall())
@@ -17,9 +18,11 @@ async def read_data():
         user_list = [dict(zip(columns, row)) for row in result]
         return JSONResponse(user_list)
     else:
-        raise HTTPException(status_code=400, detail="Null")
+        raise HTTPException(status_code=400, detail="failed")
+        # return JSONResponse({"message": "failed"})
 
 
+# GET USER ID
 @user.get("/{id}")
 async def read_data(id: int):
     # return str(conn.execute(users.select(). where(users.c.id == id)).fetchone())
@@ -34,8 +37,10 @@ async def read_data(id: int):
         return JSONResponse(user_data)
     else:
         raise HTTPException(status_code=400, detail="User not found")
+        return {"message": "failed"}
 
 
+# UPDATE USER
 @user.post("/")
 async def write_data(user: User):
 
@@ -47,7 +52,7 @@ async def write_data(user: User):
     # ))
 
     result = conn.execute(users.insert().values(
-        id=user.id,
+        # id=user.id,
         username=user.username,
         email=user.email,
         password=user.password
@@ -86,11 +91,24 @@ async def write_data(user: User):
 
 @user.put("/{id}")
 async def update_user(id: int, user: User):
-    conn.execute(
-        users.update().values(username=user.username, password=user.password,
-                              email=user.email).where(users.c.id == id)
+    update_data = {
+        "username": user.username,
+        "password": user.password,
+        "email": user.email
+    }
+
+    result = conn.execute(
+        users.update().where(users.c.id == id).values(**update_data)
     )
-    return conn.execute(users.select()).fetchall()
+
+    if result.rowcount == 1:
+        return JSONResponse({
+            "status": "success",
+            "message": update_data
+        })
+    else:
+        raise HTTPException(
+            status_code=404, detail=f"User with ID {id} not found")
 
 
 @user.delete("/{id}")
