@@ -13,10 +13,10 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    # You can restrict this to specific HTTP methods if needed
     allow_methods=["*"],
-    allow_headers=["*"],  # You can restrict this to specific headers if needed
+    allow_headers=["*"],
 )
 
+# Route for URL
 app.include_router(user, prefix="/user")
 app.include_router(disease, prefix="/disease")
