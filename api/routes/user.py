@@ -1,9 +1,8 @@
 from fastapi import APIRouter, HTTPException
-from config.db import conn, session
+from config.db import session
 from models.index import users
 from schemas.index import User
 from fastapi.responses import JSONResponse
-from sqlalchemy.orm import Session
 
 
 user = APIRouter()
