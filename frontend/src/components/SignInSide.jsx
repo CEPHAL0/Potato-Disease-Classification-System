@@ -12,7 +12,7 @@ import Grid from "@mui/material/Grid";
 import PersonIcon from "@mui/icons-material/Person";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const Copyright = (props) => {
   return (
@@ -36,17 +36,20 @@ const defaultTheme = createTheme();
 const SignInSide = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
 
   // Function to Handle Button Click
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const data = new FormData(event.currentTarget);
+    // const data = new FormData(event.currentTarget);
 
     // email = await data.get("email");
     // password = await data.get("password");
 
-    console.log(JSON.stringify({ email: email, password: password }));
+    console.log(
+      JSON.stringify({ email: email, password: password, username: username })
+    );
 
     // const response = await fetch("http://localhost:8000/login/result", {
     //   method: "POST",
@@ -56,16 +59,21 @@ const SignInSide = () => {
     const requestBody = {
       email: email,
       password: password,
+      username: username,
     };
 
-    const response = await fetch("http://localhost:8000/login/details", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestBody),
-    });
-    
+    const response = await fetch(
+      "http://localhost:8000/disease/login/details",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      }
+    );
+
+    console.log(response);
   };
 
   return (
@@ -143,6 +151,22 @@ const SignInSide = () => {
                   setPassword(e.target.value);
                 }}
                 autoComplete="current-password"
+                fontFamily="Poppins"
+              />
+
+              {/* EMAIL FIELD */}
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="username"
+                label="Username"
+                type="username"
+                id="username"
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                }}
+                autoComplete="email"
                 fontFamily="Poppins"
               />
 

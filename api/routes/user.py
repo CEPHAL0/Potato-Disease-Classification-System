@@ -40,17 +40,9 @@ async def read_data(id: int):
         return {"message": "failed"}
 
 
-# UPDATE USER
+# INSERT USER
 @user.post("/")
 async def write_data(user: User):
-
-    # return conn.execute(users.insert().values(
-    #     id=user.id,
-    #     username=user.username,
-    #     email=user.email,
-    #     password=user.password
-    # ))
-
     result = conn.execute(users.insert().values(
         # id=user.id,
         username=user.username,
@@ -74,21 +66,7 @@ async def write_data(user: User):
             status_code=500, detail="Failed to insert user data")
 
 
-# @user.put("/")
-# async def update_data(id: int, username: str, password: str, email: str):
-#     # conn.execute(users.update(
-#     #     id=id,
-#     #     username=user.username,
-#     #     email=user.email,
-#     #     password=user.password
-#     # ).where(users.c.id == id))
-
-#     conn.execute(users.update().where(users.c.id == id).values(
-#         id, username, password, email))
-
-#     # conn.execute(users.update().where(users.c.id == id).values())
-#     return conn.execute(users.select()).fetchall()
-
+# UPDATE USER
 @user.put("/{id}")
 async def update_user(id: int, user: User):
     update_data = {
@@ -111,6 +89,7 @@ async def update_user(id: int, user: User):
             status_code=404, detail=f"User with ID {id} not found")
 
 
+# DELETE USER
 @user.delete("/{id}")
 async def delete_data(id: int):
     user_to_delete = conn.execute(
@@ -123,7 +102,7 @@ async def delete_data(id: int):
         # inserted_user_id = result.inserted_primary_key[0]
         return JSONResponse({
             "status": "success",
-            "data": {
+            "deleted_user": {
                 "id": id,
                 "username": user_to_delete.username,
                 "email": user_to_delete.email,
@@ -133,8 +112,3 @@ async def delete_data(id: int):
     else:
         raise HTTPException(
             status_code=500, detail="Failed to delete user data")
-
-
-@user.get("/")
-async def read_data():
-    return conn.execute(users.select()).fetchall()

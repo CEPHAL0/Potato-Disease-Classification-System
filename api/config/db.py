@@ -7,5 +7,4 @@ engine = create_engine("mysql+pymysql://root@localhost:3306/classificationdb")
 # engine = create_engine(DATABASE_URL)
 meta = MetaData()
 
-
 conn = engine.connect()
