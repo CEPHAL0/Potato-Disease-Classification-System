@@ -41,6 +41,10 @@ def read_file_as_image(data) -> np.ndarray:
 async def predict(file: UploadFile = File()):
 
     image = read_file_as_image(await file.read())
+
+    target_shape = (256, 256, 3)
+    image = Image.fromarray(image)
+    image = image.resize((target_shape[1], target_shape[0]))
     # bytes = await file.read()
 
     # The model accepts the data in format [[]] format but we have the image in [] format, so we have to expand the dims in the numpy array of the image
